@@ -1,0 +1,27 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: '0 21 * * *'  # 每天 UTC 时间 2 点执行一次
+  workflow_dispatch:      # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout forked repo
+        uses: actions/checkout@v3
+        with:
+          ref: master  # 你的默认分支
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "GNUES"
+          git config --global user.email "cpcrs_nation@163.com"
+
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/microsoft/winget-pkgs.git
+          git fetch upstream
+          git merge upstream/master --allow-unrelated-histories --no-edit
+          git push origin master
